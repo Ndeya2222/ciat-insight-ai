@@ -26,7 +26,7 @@ class Command(BaseCommand):
         for name, grp, staff, sup in [("admin_demo", None, True, True), ("coord_demo", g_coord, True, False),
                                       ("analyste_demo", g_an, False, False), ("mentor_demo", g_men, False, False), ("mentor2_demo", g_men, False, False)]:
             u, created = User.objects.get_or_create(username=name, defaults={"is_staff": staff, "is_superuser": sup})
-            if created: u.set_password(os.environ.get("DEMO_PASSWORD", "Demo@CIAT2026")); u.save()
+            u.set_password(os.environ.get("DEMO_PASSWORD", "Demo@CIAT2026")); u.save()
             if grp: u.groups.add(grp)
             users[name] = u
         cohorts = [Cohort.objects.get_or_create(name=n, defaults={"start_date": d})[0] for n, d in
