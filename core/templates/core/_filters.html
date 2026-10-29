@@ -1,0 +1,9 @@
+<form method="get" class="card card-body mb-3"><div class="row g-2 align-items-end">
+{% if with_q %}<div class="col-12 col-md-4"><label class="form-label small">Recherche</label><input class="form-control" name="q" value="{{ f.q }}" placeholder="Titre, description, porteur"></div>{% endif %}
+<div class="col-6 col-md-2"><label class="form-label small">Cohorte</label><select class="form-select" name="cohorte"><option value="">Toutes</option>{% for c in cohorts %}<option value="{{ c.id }}" {% if f.cohorte == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+<div class="col-6 col-md-2"><label class="form-label small">Domaine</label><select class="form-select" name="domaine"><option value="">Tous</option>{% for k,l in domains %}<option value="{{ k }}" {% if f.domaine == k %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+<div class="col-6 col-md-2"><label class="form-label small">Statut</label><select class="form-select" name="statut"><option value="">Tous</option>{% for k,l in statuses %}<option value="{{ k }}" {% if f.statut == k %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+<div class="col-6 col-md-2"><label class="form-label small">Porteur</label><input class="form-control" name="porteur" value="{{ f.porteur }}"></div>
+<div class="col-6 col-md-2"><label class="form-label small">Du</label><input type="date" class="form-control" name="du" value="{{ f.du }}"></div>
+<div class="col-6 col-md-2"><label class="form-label small">Au</label><input type="date" class="form-control" name="au" value="{{ f.au }}"></div>
+<div class="col-12 col-md-auto"><button class="btn btn-primary">Filtrer</button> <a class="btn btn-outline-secondary" href="?">Réinitialiser</a></div></div></form>

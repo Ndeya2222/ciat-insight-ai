@@ -1,0 +1,4 @@
+titre,porteur,domaine,cohorte,date_soumission,budget
+Agro-Capteurs,Awa Diop,agri,Cohorte 2026-2027 (fictive),2026-10-01,2000000
+Solaire Mobile,Moussa Ba,Énergie et énergies renouvelables,Cohorte 2026-2027 (fictive),2026-10-05,1500000
+Ligne invalide,,xyz,Cohorte inconnue,pas-une-date,-5

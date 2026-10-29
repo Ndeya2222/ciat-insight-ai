@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}{% load static %}{% block content %}
+<div class="mx-auto card shadow-sm" style="max-width:420px"><div class="card-body p-4">
+<img src="{% static 'core/img/isep-logo.png' %}" alt="Logo de l’ISEP Amadou Trawaré" style="height:90px" class="mb-3 d-block mx-auto"><h1 class="h4 text-primary text-center">CIAT Insight AI</h1><p class="text-muted text-center">Des données aux décisions</p>
+{% if form.errors %}<div class="alert alert-danger">Identifiant ou mot de passe incorrect.</div>{% endif %}
+<form method="post">{% csrf_token %}
+<label class="form-label" for="id_username">Identifiant</label><input class="form-control mb-3" name="username" id="id_username" required autofocus>
+<label class="form-label" for="id_password">Mot de passe</label><input class="form-control mb-3" type="password" name="password" id="id_password" required>
+<button class="btn btn-primary w-100">Se connecter</button></form></div></div>{% endblock %}

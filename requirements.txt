@@ -1,0 +1,8 @@
+Django==5.1.15
+gunicorn==26.2.0
+openpyxl==3.1.5
+pillow==12.1.1
+psycopg-binary==3.3.6
+psycopg==3.3.6
+reportlab==4.4.10
+whitenoise==6.12.0

@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}{% block title %}Tableau de bord{% endblock %}{% block content %}
+<div class="d-flex justify-content-between mb-3"><h1 class="h3">Tableau de bord décisionnel</h1><a class="btn btn-outline-primary" href="{% url 'report_pdf' %}?{{ request.GET.urlencode }}"><i class="bi bi-file-earmark-pdf"></i> Rapport PDF</a></div>
+{% include "core/_filters.html" %}
+<div class="row g-3 mb-3">{% for t,v,c in cards %}<div class="col-6 col-md-4 col-xl"><div class="card kpi h-100"><div class="card-body"><div class="small text-muted">{{ t }}</div><div class="v {{ c }}">{{ v }}</div></div></div></div>{% endfor %}</div>
+<p class="small text-muted">Taux de sélection = sélectionnés ÷ (sélectionnés + rejetés) ; taux d'achèvement = terminés ÷ sélectionnés. « n/d » = données insuffisantes. {{ k.decides }} candidature(s) avec décision.</p>
+<div class="row g-3">
+<div class="col-lg-6"><div class="card"><div class="card-header">Évolution mensuelle des candidatures</div><div class="card-body"><canvas id="c_monthly" height="160"></canvas></div></div></div>
+<div class="col-lg-6"><div class="card"><div class="card-header">Répartition par domaine</div><div class="card-body"><canvas id="c_domain" height="160"></canvas></div></div></div>
+<div class="col-lg-6"><div class="card"><div class="card-header">Répartition par statut</div><div class="card-body"><canvas id="c_status" height="160"></canvas></div></div></div>
+<div class="col-lg-6"><div class="card"><div class="card-header">Comparaison entre cohortes</div><div class="card-body"><canvas id="c_cohort" height="160"></canvas></div></div></div>
+<div class="col-lg-6"><div class="card"><div class="card-header">Progression des projets actifs (%)</div><div class="card-body"><canvas id="c_progress" height="160"></canvas></div></div></div>
+<div class="col-lg-6"><div class="card"><div class="card-header">Retards par domaine</div><div class="card-body"><canvas id="c_late" height="160"></canvas></div></div></div>
+<div class="col-12"><div class="card"><div class="card-header">Financements obtenus par mois (XOF)</div><div class="card-body"><canvas id="c_funding" height="90"></canvas></div></div></div>
+<div class="col-12"><div class="card"><div class="card-header">Projets en retard</div><div class="table-responsive"><table class="table mb-0"><tr><th>Projet</th><th>Cohorte</th><th>Date limite</th><th>Jalons en retard</th></tr>
+{% for p in late %}<tr><td><a href="{% url 'project_detail' p.pk %}">{{ p.title }}</a></td><td>{{ p.cohort }}</td><td>{{ p.deadline|default:"—" }}</td><td>{{ p.late_milestones }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted">Aucun retard détecté.</td></tr>{% endfor %}</table></div></div></div></div>
+<p class="small text-muted mt-3">La répartition par genre n'est pas affichée : aucune donnée de genre n'est collectée.</p>
+{{ charts|json_script:"chartdata" }}{% endblock %}
+{% block js %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script><script>
+const D=JSON.parse(document.getElementById('chartdata').textContent);const P=['#4c311f','#c8946b','#2a9d8f','#6c757d','#c1121f','#7b5ea7','#4cc9f0','#f4845f','#99c24d'];
+function mk(id,type,labels,sets,opt){const el=document.getElementById(id);if(!labels.length){el.outerHTML='<p class="text-muted mb-0">Aucune donnée pour ces filtres.</p>';return}
+new Chart(el,{type,data:{labels,datasets:sets},options:Object.assign({responsive:true,plugins:{legend:{display:sets.length>1||type==='doughnut'}}},opt||{})})}
+mk('c_monthly','line',D.monthly.labels,[{label:'Candidatures',data:D.monthly.data,borderColor:P[0],tension:.3}]);
+mk('c_domain','bar',D.domain.labels,[{label:'Projets',data:D.domain.data,backgroundColor:P[0]}],{indexAxis:'y'});
+mk('c_status','doughnut',D.status.labels,[{data:D.status.data,backgroundColor:P}]);
+mk('c_cohort','bar',D.cohort.labels,[{label:'Candidatures',data:D.cohort.cand,backgroundColor:P[0]},{label:'Sélectionnés',data:D.cohort.sel,backgroundColor:P[1]},{label:'Terminés',data:D.cohort.done,backgroundColor:P[2]}]);
+mk('c_progress','bar',D.progress.labels,[{label:'%',data:D.progress.data,backgroundColor:P[2]}],{indexAxis:'y',scales:{x:{max:100}}});
+mk('c_late','bar',D.late.labels,[{label:'En retard',data:D.late.data,backgroundColor:P[4]}]);
+mk('c_funding','bar',D.funding.labels,[{label:'XOF',data:D.funding.data,backgroundColor:P[1]}]);
+</script>{% endblock %}

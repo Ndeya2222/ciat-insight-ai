@@ -1,0 +1,11 @@
+{% extends "core/base.html" %}{% block content %}<h1 class="h3 mb-3">Importer des projets (CSV ou Excel)</h1>
+<div class="alert alert-info small">Colonnes obligatoires : <code>titre, porteur, domaine, cohorte, date_soumission (AAAA-MM-JJ), budget</code>. La cohorte doit déjà exister. Rien n'est enregistré avant votre confirmation ; les doublons ne sont jamais écrasés. Maximum 2 Mo, 500 lignes.</div>
+<form method="post" enctype="multipart/form-data" class="card card-body mb-3">{% csrf_token %}<label class="form-label" for="f">Fichier .csv ou .xlsx</label>
+<div class="input-group"><input class="form-control" type="file" id="f" name="file" accept=".csv,.xlsx" required><button class="btn btn-primary">Vérifier</button></div></form>
+{% if n_ok is not None %}<div class="card mb-3"><div class="card-header">Aperçu de « {{ filename }} » : {{ n_ok }} ligne(s) valide(s), {{ errs|length }} en erreur</div>
+<div class="table-responsive"><table class="table table-sm mb-0"><tr><th>Titre</th><th>Porteur</th><th>Domaine</th><th>Date</th><th>Budget</th></tr>
+{% for r in preview %}<tr><td>{{ r.titre }}</td><td>{{ r.porteur }}</td><td>{{ r.domaine }}</td><td>{{ r.date }}</td><td>{{ r.budget }}</td></tr>{% endfor %}</table></div></div>
+{% if errs %}<div class="card border-danger mb-3"><div class="card-header text-danger">Rapport d'erreurs (ces lignes seront ignorées)</div><ul class="list-group list-group-flush">
+{% for n,t,m in errs %}<li class="list-group-item small">Ligne {{ n }} — {{ t }} : {{ m }}</li>{% endfor %}</ul></div>{% endif %}
+{% if n_ok %}<form method="post">{% csrf_token %}<button name="confirm" value="1" class="btn btn-success">Confirmer l'import de {{ n_ok }} projet(s)</button></form>{% endif %}{% endif %}
+{% if history %}<h2 class="h6 mt-4">Derniers imports</h2><ul class="small">{% for h in history %}<li>{{ h.at|date:"d/m/Y H:i" }} — {{ h.filename }} : {{ h.created }} créé(s), {{ h.errors }} erreur(s) ({{ h.user }})</li>{% endfor %}</ul>{% endif %}{% endblock %}

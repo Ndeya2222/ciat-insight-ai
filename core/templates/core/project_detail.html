@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}{% block content %}
+<div class="d-flex flex-wrap justify-content-between mb-3"><h1 class="h3">{{ p.title }} {% if p.is_late %}<span class="badge text-bg-danger fs-6">En retard</span>{% endif %}</h1><div>
+{% if can_edit %}<a class="btn btn-primary" href="{% url 'project_edit' p.pk %}">Modifier</a>{% endif %}
+{% if can_delete %}<form method="post" action="{% url 'project_delete' p.pk %}" class="d-inline" onsubmit="return confirm('Supprimer définitivement ce projet ?')">{% csrf_token %}<button class="btn btn-outline-danger">Supprimer</button></form>{% endif %}</div></div>
+<div class="row g-3"><div class="col-lg-7"><div class="card card-body"><dl class="row mb-0">
+<dt class="col-sm-4">Porteur</dt><dd class="col-sm-8">{{ p.owner }}</dd><dt class="col-sm-4">Domaine</dt><dd class="col-sm-8">{{ p.get_domain_display }}</dd>
+<dt class="col-sm-4">Cohorte</dt><dd class="col-sm-8">{{ p.cohort }}</dd><dt class="col-sm-4">Statut</dt><dd class="col-sm-8">{{ p.get_status_display }}</dd>
+<dt class="col-sm-4">Progression</dt><dd class="col-sm-8"><div class="progress"><div class="progress-bar" style="width:{{ p.progress }}%">{{ p.progress }}%</div></div></dd>
+<dt class="col-sm-4">Soumis / sélectionné</dt><dd class="col-sm-8">{{ p.submitted_on }} / {{ p.selected_on|default:"—" }}</dd>
+<dt class="col-sm-4">Date limite</dt><dd class="col-sm-8">{{ p.deadline|default:"—" }}{% if p.deadline_passed %} <span class="text-danger">(dépassée)</span>{% endif %}</dd>
+<dt class="col-sm-4">Mentor</dt><dd class="col-sm-8">{{ p.mentor|default:"—" }}</dd><dt class="col-sm-4">Budget prévisionnel</dt><dd class="col-sm-8">{{ p.budget }} XOF</dd>
+<dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ p.description|default:"—" }}</dd><dt class="col-sm-4">Problème</dt><dd class="col-sm-8">{{ p.problem|default:"—" }}</dd>
+<dt class="col-sm-4">Solution</dt><dd class="col-sm-8">{{ p.solution|default:"—" }}</dd><dt class="col-sm-4">Partenaires</dt><dd class="col-sm-8">{% for x in p.partners.all %}{{ x }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd></dl>
+{% if p.is_demo %}<p class="small text-muted mt-2 mb-0">Donnée fictive de démonstration.</p>{% endif %}</div></div>
+<div class="col-lg-5"><div class="card mb-3"><div class="card-header">Jalons</div><ul class="list-group list-group-flush">{% for m in milestones %}<li class="list-group-item d-flex justify-content-between"><span>{{ m.title }}<br><small class="text-muted">prévu {{ m.due_date }}</small></span>
+<span class="badge align-self-center text-bg-{% if m.state == 'En retard' %}danger{% elif m.state == 'Réalisé' %}success{% else %}secondary{% endif %}">{{ m.state }}</span></li>{% empty %}<li class="list-group-item text-muted">Aucun jalon.</li>{% endfor %}</ul></div>
+<div class="card mb-3"><div class="card-header">Financements</div><ul class="list-group list-group-flush">{% for f in fundings %}<li class="list-group-item">{{ f.source }} — {{ f.amount }} {{ f.currency }} ({{ f.get_status_display }})</li>{% empty %}<li class="list-group-item text-muted">Aucun financement.</li>{% endfor %}</ul></div>
+<div class="card"><div class="card-header">Historique</div><ul class="list-group list-group-flush small">{% for l in logs %}<li class="list-group-item">{{ l.created|date:"d/m/Y H:i" }} — {{ l.user|default:"système" }} : {{ l.text }}</li>{% empty %}<li class="list-group-item text-muted">Aucune modification.</li>{% endfor %}</ul></div></div></div>{% endblock %}
